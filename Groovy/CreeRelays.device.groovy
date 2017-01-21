@@ -1,26 +1,17 @@
 /**
- *  Cree Relays - CreeRelays.device.groovy
+ *  Garage Door Opener
  *
- *  Copyright 2015 Dan Ogorchock
+ *  Copyright 2017 Chris Hanson
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- *  in compliance with the License. You may obtain a copy of the License at:
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
- *  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
- *  for the specific language governing permissions and limitations under the License.
- *
- *	Change History
- *  
- *  Change 1:	2015-04-04 (ogiewon with credit to jscgs350, Sticks18's work on GE Link Bulb)
- *				Added fix for dimming below 7%
- *  Change 2:   2015-04-18 (ogiewon) modified to handle 8 relays (Cree zigbee board attached to Arduino)
- */
- 
 metadata {
-	definition (name: "Cree Relays", namespace: "ogiewon", author: "Dan Ogorchock") {
+	definition (name: "Garage Door Opener", namespace: "dzelenka", author: "Chris Hanson") {
+		capability "Button"
+	}
+}
+*/
+metadata {
+	definition (name: "Garage Door Opener", namespace: "dzelenka", author: "Chris Hanson") {
 
 		capability "Actuator"
 		capability "Refresh"
@@ -29,12 +20,6 @@ metadata {
 
 		command "switch1on"
 		command "switch2on"
-		command "switch3on"
-		command "switch4on"
-		command "switch5on"
-		command "switch6on"
-		command "switch7on"
-		command "switch8on"
 
 		fingerprint profileId: "C05E", inClusters: "0000,0003,0004,0005,0006,0008,1000", outClusters: "0000,0019"
 	}
@@ -74,32 +59,8 @@ metadata {
 			state "default", label: "Relay 2", action: "switch2on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
 		}
         
-		standardTile("switch3", "device.switch3", width: 1, height: 1, canChangeIcon: true, decoration: "flat") {
-			state "default", label: "Relay 3", action: "switch3on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
-		}
-        
-		standardTile("switch4", "device.switch4", width: 1, height: 1, canChangeIcon: true, decoration: "flat") {
-			state "default", label: "Relay 4", action: "switch4on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
-		}
-
-		standardTile("switch5", "device.switch5", width: 1, height: 1, canChangeIcon: true, decoration: "flat") {
-			state "default", label: "Relay 5", action: "switch5on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
-		}
-
-		standardTile("switch6", "device.switch6", width: 1, height: 1, canChangeIcon: true, decoration: "flat") {
-			state "default", label: "Relay 6", action: "switch6on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
-		}
-
-		standardTile("switch7", "device.switch7", width: 1, height: 1, canChangeIcon: true, decoration: "flat") {
-			state "default", label: "Relay 7", action: "switch7on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
-		}
-
-		standardTile("switch8", "device.switch8", width: 1, height: 1, canChangeIcon: true, decoration: "flat") {
-			state "default", label: "Relay 8", action: "switch8on", icon: "st.switches.switch.off", backgroundColor: "#ffffff"
-		}		
-
 		main(["switch"])
-		details(["switch", "level", "levelSliderControl", "refresh","switch1","switch2","switch3","switch4","switch5","switch6","switch7","switch8"])
+		details(["switch", "level", "levelSliderControl", "refresh","switch1","switch2"])
 	}
 }
 
@@ -135,8 +96,7 @@ def parse(String description) {
         
 		sendEvent( name: "level", value: i )
     }
-    
-	
+
 }
 
 def on() {
@@ -222,7 +182,6 @@ private getEndpointId() {
 }
 
 
-
 private hex(value, width=2) {
 	def s = new BigInteger(Math.round(value).toString()).toString(16)
 	while (s.size() < width) {
@@ -259,28 +218,4 @@ def switch1on() {
 def switch2on() {
 	log.debug "Executing 'switch2on'"
 	setLevel(2)
-}
-def switch3on() {
-	log.debug "Executing 'switch3on'"
-	setLevel(3)
-}
-def switch4on() {
-	log.debug "Executing 'switch4on'"
-	setLevel(4)
-}
-def switch5on() {
-	log.debug "Executing 'switch5on'"
-	setLevel(5)
-}
-def switch6on() {
-	log.debug "Executing 'switch6on'"
-	setLevel(6)
-}
-def switch7on() {
-	log.debug "Executing 'switch7on'"
-	setLevel(7)
-}
-def switch8on() {
-	log.debug "Executing 'switch8on'"
-	setLevel(8)
 }
