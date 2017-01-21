@@ -76,6 +76,14 @@ CreeRelays requires:
 - Only Dim Levels 1 through 8 are currently being handled by the Arduino sketch.  Using the slider control to set dim levels above 8 or below 1 will turn off all of the output pins.  Note: All 100 dim levels are properly recognized in the Arduino Sketch, but I only have code in place for values 1 though 8 in this example.
 - Only one digital output can be on at a time in the current example.  For more complicated designs, the exercise is left up to the student!
 
+##CreeGarageDoorButtons
 
+- This is an attempt to utilize this proof of concept into a reliable garage door opener with two buttons. I have created a working copy of the parent project with an Arduino Uno, a Cree Zigbee radio, and a dual relay.
+
+- a picture should go here.
+
+- I have a Adafruit Metro Mini 328 in the mail for my production version.
+
+- I've simplified the parent code down to two relays. The big job left will be to convert the switch funtion to buttons...
 
 
