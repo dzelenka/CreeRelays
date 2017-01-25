@@ -1,0 +1,53 @@
+/*
+Get button events and signal a Cree Relay device.
+
+The controller is connected via a Cree Connected Bulb zigbee radio, so it looks 
+like a dimmable light bulb. An Arduino is reading the bulb output and interprets
+the signals.
+
+If the bulb is set to dim level ~10% then relay 1 is closed.
+If the bulb is set to dim level ~20% then relay 2 is closed.
+Otherwise, all relays are open.
+
+In my use, the relays are physically wired to two Genie garage door openers, and operate
+the doors just as if someone had pressed the wall buttons.
+*/
+definition(
+    name: "Button Activated Cree Relays",
+    namespace: "dzelenka",
+    author: "Chris Hanson",
+    description: "Get button events and signal a Cree Relay controller", 
+    category: "Convenience",
+    iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/smartlights.png",
+//    iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/smartlights@2x.png",
+//    iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/smartlights@3X.png",
+)
+
+preferences {
+    section("When these buttons are pressed ...") {
+        input "buttons", "capability.button", required: true, multiple: true
+    }
+    section("... pulse this relay.") {
+    	input "controller", "capability.switchLevel", required: true, title: "Cree Relay Controller:"
+    	input "relay", "number", required: true, title: "Relay (1-10):"
+    }
+}
+
+def installed()
+{
+    subscribe(buttons, "button.pushed", buttonPushed)
+}
+
+def updated()
+{
+    unsubscribe()
+    subscribe(buttons, "button.pushed", buttonPushed)
+}
+
+def buttonPushed(evt) {
+    log.debug "Event: button pushed"
+    controller.on()
+    controller.setLevel(relay * 10)
+    pause(1000)
+    controller.setLevel(1)
+}
