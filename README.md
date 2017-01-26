@@ -1,10 +1,9 @@
 ## CreeRelays
-SmartThings + Cree Connected LED Bulb Zigbee board  + Adafruit Metro Mini 328 = Cheap Home Automation Potential!
+SmartThings + Cree Connected LED Bulb Zigbee board + Arduino = Cheap Home Automation Potential!
 
 This is a fork of the ogiewon/CreeRelays project. I've changed the little Arduino model, but otherwise duplicated his equipment. I wanted to take advantage of his work to build a functional 2x garage door opener. I eventually drifted away from all his code, but I still owe him for the original good work.
 
 ## Overview
-
 ogiewon wrote a device driver for his hardware device. I used a different paradigm for the project, which felt more "SmartThings" like. I created a very simple button device type to create virtual buttons on my phone, one for each garage door. For the CreeRelay hardware I just used the stock Cree Bulb device type. To connect the buttons to the CreeRelay device I used a smartapp. The smartapp simply listens for butten events and sets the Cree bulb "switchLevel" to a specific level. When smartapp is added it askes for button(s) to listen for, the Cree Relay device to set, and the relay number to activate. I multiply the relay number by 10 to determine the switchLevel value. (i.e. Relay 5 is activated by setting switchLevel to 50%.)
 
 The only unusual thing done by the smartapp is to set the switchLevel to 1% after a 1000ms delay. (Turning off the Cree device after a delay caused unpredictable results). Otherwise I could have used a stock smartapp.
@@ -24,17 +23,20 @@ CreeRelays consists of three parts:
 CreeRelays requires:
 - Arduino Nano, UNO, or similar
 - Cree Connected LED Bulb's Zigbee Communication Board
-- Relay(s)
+- Relay(s) (I used a 2 relay module)
 
 ## Hardware Setup Instructions
-- Join your Cree Connected Bulb to your hub using your phone's SmartThings App BEFORE disassembling the bulb!!!
-- After removing the Zigbee board from the Cree Connected bulb, attach it to the Arduino as follows
-  - Zigbee Board Pin 1 to Arduino GND
-  - Zigbee Board Pin 2 to Arduino 3.3V
-  - Zigbee Board Pin 3 to Arduino Pin 2 (PWM)
-  - Zigbee Board Pin 3 to Arduino Pin 3 (On/Off) (not used by my code)
-  - Arduino Pin 4 to Relay #1
-  - Arduino Pin 5 to Relay #2
+Join your Cree Connected Bulb to your hub using your phone's SmartThings App BEFORE disassembling the bulb!!! (To connect it later you need to power cycle it 4 times and then leave it on.)
+
+After removing the Zigbee board from the Cree Connected bulb, attach it to the Arduino as follows:
+ - Zigbee Board Pin 1 to Arduino GND
+ - Zigbee Board Pin 2 to Arduino 3.3V
+ - Zigbee Board Pin 3 to Arduino Pin 2 (PWM)
+ - Zigbee Board Pin 4 to Arduino Pin 3 (On/Off) (not used by my code)
+ - Relay GND to Arduino GND
+ - Relay IN1 to Arduino Pin 4
+ - Relay IN2 to Arduino Pin 5
+ - Relay VCC to Arduino 5V
   
 ##Done for now...  
   
