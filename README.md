@@ -1,16 +1,18 @@
 ## CreeRelays
 SmartThings + Cree Connected LED Bulb Zigbee board + Arduino = Cheap Home Automation Potential!
 
-This is a fork of the ogiewon/CreeRelays project. I've changed the little Arduino model, but otherwise duplicated his equipment. I wanted to take advantage of his work to build a functional 2x garage door opener. I eventually drifted away from all his code, but I still owe him for the original good work.
+![screenshot](https://github.com/dzelenka/CreeRelays/blob/master/P1000969.JPG)
+
+This is a fork of the ogiewon/CreeRelays project. I've changed the little Arduino model, but otherwise duplicated his equipment. I wanted to take advantage of his work to build a functional 2x garage door opener. I eventually drifted away from all his code, but we still owe him for the original good work and inspiration!
 
 ## Overview
 ogiewon wrote a device driver for his hardware device. I used a different paradigm for the project, which felt more "SmartThings" like. I created a very simple button device type to create virtual buttons on my phone, one for each garage door. For the CreeRelay hardware I just used the stock Cree Bulb device type. To connect the buttons to the CreeRelay device I used a smartapp. The smartapp simply listens for butten events and sets the Cree bulb "switchLevel" to a specific level. When smartapp is added it askes for button(s) to listen for, the Cree Relay device to set, and the relay number to activate. I multiply the relay number by 10 to determine the switchLevel value. (i.e. Relay 5 is activated by setting switchLevel to 50%.)
 
 The only unusual thing done by the smartapp is to set the switchLevel to 1% after a 1000ms delay. (Turning off the Cree device after a delay caused unpredictable results). Otherwise I could have used a stock smartapp.
 
-The Arduino sketch is also quit simple. I simplified the interupt technique only because I couldn't figure out what ogiewon was doing with his. It worked fine, but I needed to understand how. All the sketch does is read the switchLevel and turn it into a value between 0 and 10. The relay is active until the switchLevel/value changes.
+The Arduino sketch is also quit simple. I simplified the interrupt technique only because I couldn't figure out what ogiewon was doing with his. It worked fine, but I needed to understand how. All the sketch does is read the Cree switchLevel and turn it into a value between 0 and 10. The relay is active until the switchLevel/value changes.
 
-I found the switchLevel from the Cree board drifted a bit, around +-0.5%. I think this code could be modified to run 100 relays, but much safer to run 50 relays.
+I found the switchLevel from the Cree board drifted a bit, around +-0.5%. I think this code could be modified to run 100 relays, but much safer to run 50 relays. Using 32 (2^5) values from the Cree board you could run 5 relays, each having and on/off value.
 
 ## Code
 CreeRelays consists of three parts:
