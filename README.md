@@ -5,6 +5,10 @@ SmartThings + Cree Connected LED Bulb Zigbee board + Arduino = Cheap Home Automa
 
 This is a fork of the ogiewon/CreeRelays project. I've changed the little Arduino model, but otherwise duplicated his equipment. I wanted to take advantage of his work to build a functional 2x garage door opener. I eventually drifted away from all his code, but we still owe him for the original good work and inspiration!
 
+Here are some snaps of my final result, ready to mount in the garage:
+![screenshot](https://github.com/dzelenka/CreeRelays/blob/master/P1000970.JPG)
+![screenshot](https://github.com/dzelenka/CreeRelays/blob/master/P1000971.JPG)
+
 ## Overview
 ogiewon wrote a device driver for his hardware device. I used a different paradigm for the project, which felt more "SmartThings" like. I created a very simple button device type to create virtual buttons on my phone, one for each garage door. For the CreeRelay hardware I just used the stock Cree Bulb device type. To connect the buttons to the CreeRelay device I used a smartapp. The smartapp simply listens for butten events and sets the Cree bulb "switchLevel" to a specific level. When smartapp is added it askes for button(s) to listen for, the Cree Relay device to set, and the relay number to activate. I multiply the relay number by 10 to determine the switchLevel value. (i.e. Relay 5 is activated by setting switchLevel to 50%.)
 
