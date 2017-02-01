@@ -48,6 +48,6 @@ def buttonPushed(evt) {
     log.debug "Event: button pushed"
     controller.on()
     controller.setLevel(relay * 10)
-    pause(1000)
+    pause(1500)
     controller.setLevel(1)
 }
