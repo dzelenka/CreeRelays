@@ -56,7 +56,7 @@ void loop()
   } 
 
   prev_value = pwm_value;
-  delay(25);  // I found this necessary to allow the PWM value time to transition.
+  delay(50);  // I found this necessary to allow the PWM value time to transition.
 }
 
 //******************************************************************************************
