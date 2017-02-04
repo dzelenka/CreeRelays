@@ -3,11 +3,16 @@ Get button events and signal a Cree Relay device.
 
 The controller is connected via a Cree Connected Bulb zigbee radio, so it looks 
 like a dimmable light bulb. An Arduino is reading the bulb output and interprets
-the signals.
+the signals. To avoid problems with dim level waivering, I use only values divisable
+by three. I avoid level 0 because that caused some odd problems. I use value 99 as a
+"parking spot" that doesn't do anything. That leaves me 32 unique values. 
 
-If the bulb is set to dim level ~10% then relay 1 is closed.
-If the bulb is set to dim level ~20% then relay 2 is closed.
-Otherwise, all relays are open.
+I use the first 3 bits to identify 8 possible relays. I use the last 2 bits to identify 
+4 possible actions: 0 = off, 1 = on, 2 = toggle, 3 = push button (on for 1 second, and
+then off).
+
+To allow the same action to be performed twice in a row, I have the script set a dim
+value to perform an action, wait a second, and then set the dim value to 99.
 
 In my use, the relays are physically wired to two Genie garage door openers, and operate
 the doors just as if someone had pressed the wall buttons.
@@ -19,8 +24,6 @@ definition(
     description: "Get button events and signal a Cree Relay controller", 
     category: "Convenience",
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/smartlights.png",
-//    iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/smartlights@2x.png",
-//    iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/smartlights@3X.png",
 )
 
 preferences {
@@ -29,7 +32,8 @@ preferences {
     }
     section("... pulse this relay.") {
     	input "controller", "capability.switchLevel", required: true, title: "Cree Relay Controller:"
-    	input "relay", "number", required: true, title: "Relay (1-10):"
+    	input "relay", "number", required: true, title: "Relay (1-8):"
+        input "action", "number", required: true, title: "Action (1-4):"
     }
 }
 
@@ -45,9 +49,16 @@ def updated()
 }
 
 def buttonPushed(evt) {
-    log.debug "Event: button pushed"
-    controller.on()
-    controller.setLevel(relay * 10)
-    pause(1500)
-    controller.setLevel(1)
+	int dim
+    dim = (relay - 1) + (action - 1) * 8
+    dim = (dim + 1) * 3
+    log.debug "New value: ${dim}"
+    controller.setLevel(dim)
+    pause(1000)
+    controller.setLevel(99)
+/*	I'm leaving the controller on because the set level command seems to 
+	generate a phantom on command. If I used the sequence 
+    on+setlevel+pause+setlevel(0)+off, the relay would close, open and then
+    mysteriously close again. I could not figure it out.
+*/
 }
