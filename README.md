@@ -1,18 +1,28 @@
 ## CreeRelays
-SmartThings + Cree Connected LED Bulb Zigbee board + Arduino = Cheap Home Automation Potential!
+My prototype:
 
 ![screenshot](https://github.com/dzelenka/CreeRelays/blob/master/P1000969.JPG)
 
 This is a fork of the ogiewon/CreeRelays project. I've changed the little Arduino model, but otherwise duplicated his equipment. I wanted to take advantage of his work to build a functional 2x garage door opener. I eventually drifted away from all his code, but we still owe him for the original good work and inspiration!
 
 ## Overview
-ogiewon wrote a device driver for his hardware device. I used a different paradigm for the project, which felt more "SmartThings" like. I created a very simple button device type to create virtual buttons on my phone, one for each garage door. For the CreeRelay hardware I just used the stock Cree Bulb device type. To connect the buttons to the CreeRelay device I used a smartapp. The smartapp simply listens for butten events and sets the Cree bulb "switchLevel" to a specific level. When smartapp is added it askes for button(s) to listen for, the Cree Relay device to set, and the relay number to activate. I multiply the relay number by 10 to determine the switchLevel value. (i.e. Relay 5 is activated by setting switchLevel to 50%.)
+ogiewon wrote a device driver for his hardware device. I used a different paradigm for the project, which felt more "SmartThings" like. I created a very simple button device type to create virtual buttons on my phone, one for each garage door. For the CreeRelay hardware I just used the stock Cree Bulb device type. All the hard work on the SmartThings system is done by a smartapp. 
 
-The only unusual thing done by the smartapp is to set the switchLevel to 1% after a 1000ms delay. (Turning off the Cree device after a delay caused unpredictable results). Otherwise I could have used a stock smartapp.
+When the smartapp is installed it askes for: 1. button(s) to get events from, 2. the Cree device, 3. the Relay Number (1-8) and 4. the action to perform (1-4).
 
-The Arduino sketch is also quit simple. I simplified the interrupt technique only because I couldn't figure out what ogiewon was doing with his. It worked fine, but I needed to understand how. All the sketch does is read the Cree switchLevel and turn it into a value between 0 and 10. The relay is active until the switchLevel/value changes.
+The actions I defined are: 1. Off, 2. On, 3. Toggle, and 4. Button Push (on-delay-off).
 
-I found the switchLevel from the Cree board drifted a bit, around +-0.5%. I think this code could be modified to run 100 relays, but much safer to run 50 relays. Using 32 (2^5) values from the Cree board you could run 5 relays, each having and on/off value.
+The smartapp simply listens for button events and sets the Cree device "switchLevel" to a specific level. The specific level is calculated from the relay number and the action to perform. After a 1000ms delay, the Cree device is set to level "99", which does nothing. The Arduino sketch is waiting for changes to the switchLevel to perform actions. By "parking" the Cree device at level "99" we are able to perform the same action (Toggle or Button Push) twice in a row and have each action be a change in the switchLevel. 
+
+The Cree device has some quirks that I had to work around to get dependable performance. One quirk is a level drift of +-5%. To get around that I limited the levels to multiples of 3 and rounded. The other quirk (feature?) of the Cree is that it turns off when the switchLevel is set to "0". It caused some unexplained problems for me, so I just quit using level "0". The resulting set of switchLevels was [3,6,9...96,99]. I reserved level "99" as a parking spot, leaving exactly 32 values for signaling.
+
+Here is how I calculate the switchLevel:
+   1. Subtract 1 from the Relay number (1-8) to get a value 0-7.
+   2. Subtract 1 from Action number (1-4) to get a value 0-3.
+   3. Multiply the action by 8 (or shift left 3 times) and add it to the relay to get a value 0-31.
+   4. Add one to the result and multiply by 3 to get a value of 3-96, which is the switchLevel to set!
+
+The Arduino sketch is also quit simple. I simplified the interrupt technique (only because I couldn't figure out what ogiewon was doing with his). The main loop runs every 50ms and does two tasks: react to changes in the switchLevel, and perform timer functions. The timer function is used for the Button Push. It waits 20 loops and then turns off the relay. When the sketch detects a change in the switchLevel it does the binary math in reverse and the performs the resulting action on the resulting relay.
 
 ## Code
 CreeRelays consists of three parts:
